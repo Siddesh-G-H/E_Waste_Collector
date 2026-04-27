@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { CalendarDays, Clock3, MapPin, PackageCheck, RefreshCw } from "lucide-react";
 import { fetchAvailablePickups, Pickup, useActivePickup, useAuthSession } from "../lib/appData";
 
@@ -34,6 +34,10 @@ export default function Home() {
     }
   };
 
+  useEffect(() => {
+    handleRefreshJobs();
+  }, []);
+
   if (authLoading) {
     return <div className="px-4 py-6 text-sm text-[#69807a] md:px-6 xl:px-8">Loading account...</div>;
   }
@@ -54,7 +58,7 @@ export default function Home() {
 
       <section className="mt-5 grid gap-5 xl:grid-cols-[1fr_0.95fr]">
         <div className="rounded-[24px] border border-[#dce7e2] bg-white p-5 shadow-[0_12px_32px_rgba(16,36,34,0.06)] md:p-6">
-          <div className="mb-4 flex items-start justify-between gap-4">
+          <div className="mb-4 flex flex-col sm:flex-row sm:items-start justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className="rounded-2xl bg-[#edf7f4] p-3 text-[#00695c]">
                 <PackageCheck className="h-5 w-5" />
@@ -78,14 +82,14 @@ export default function Home() {
             <div className="text-sm text-[#69807a]">Loading active pickup...</div>
           ) : activePickup ? (
             <div className="rounded-[22px] bg-[#f7faf9] p-5">
-              <div className="flex items-center justify-between gap-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                   <div className="text-xl font-semibold text-[#102422]">{activePickup.item}</div>
                   <div className="mt-2 inline-flex rounded-full bg-[#edf7f4] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.08em] text-[#00695c]">
                     {activePickup.status.replace("_", " ")}
                   </div>
                 </div>
-                <div className="text-right text-sm text-[#69807a]">
+                <div className="text-left sm:text-right text-sm text-[#69807a]">
                   <div>{activePickup.category}</div>
                   <div className="mt-1">{activePickup.quantity} item(s)</div>
                   <div className="mt-1">{activePickup.condition || "Condition pending"}</div>
@@ -128,13 +132,13 @@ export default function Home() {
               <div className="mt-4 space-y-3">
                 {availableJobs.map((job) => (
                   <div key={job.id} className="rounded-2xl bg-white p-4">
-                    <div className="flex items-start justify-between gap-4">
+                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                       <div>
                         <div className="font-semibold text-[#102422]">{job.item}</div>
                         <div className="mt-1 text-sm text-[#69807a]">{job.address.area}, {job.address.city}</div>
                         <div className="mt-1 text-xs text-[#69807a]">{job.category} - {job.condition || "Condition pending"}</div>
                       </div>
-                      <div className="text-right">
+                      <div className="text-left sm:text-right">
                         <div className="text-sm font-semibold text-[#00695c]">{job.pricing.estimated} credits</div>
                         <div className="mt-1 text-xs uppercase tracking-[0.08em] text-[#69807a]">{job.status.replace("_", " ")}</div>
                       </div>
@@ -168,13 +172,13 @@ export default function Home() {
             <div className="space-y-3">
               {recent.map((pickup) => (
                 <div key={pickup.id} className="rounded-[20px] bg-[#f7faf9] p-4">
-                  <div className="flex items-start justify-between gap-4">
+                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                     <div>
                       <div className="font-semibold text-[#102422]">{pickup.item}</div>
                       <div className="mt-1 text-sm text-[#69807a]">{pickup.address.area}, {pickup.address.city}</div>
                       <div className="mt-1 text-xs text-[#69807a]">{pickup.category} • {pickup.condition || "Condition pending"}</div>
                     </div>
-                    <div className="text-right">
+                    <div className="text-left sm:text-right">
                       <div className="text-sm font-semibold text-[#00695c]">{pickup.pricing.final ?? pickup.pricing.estimated} credits</div>
                       <div className="mt-1 text-xs uppercase tracking-[0.08em] text-[#69807a]">{pickup.status.replace("_", " ")}</div>
                     </div>

@@ -1,11 +1,19 @@
 import React from "react";
-import { MapPin, Phone, UserCircle2 } from "lucide-react";
-import { useAuthSession, useUserPickups, useUserProfile } from "../lib/appData";
+import { useNavigate } from "react-router";
+import { MapPin, Phone, UserCircle2, LogOut } from "lucide-react";
+import { useAuthSession, useUserPickups, useUserProfile, signOutIfNoProfile } from "../lib/appData";
 
 export default function Profile() {
   const { user } = useAuthSession();
   const { profile, loading } = useUserProfile(user?.uid);
   const { pickups, loading: pickupsLoading } = useUserPickups(user?.uid);
+
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOutIfNoProfile();
+    navigate("/");
+  };
 
   if (!user) {
     return <div className="px-4 py-6 text-sm text-[#69807a] md:px-6 xl:px-8">Sign in to view your profile.</div>;
@@ -95,6 +103,17 @@ export default function Profile() {
             <div className="rounded-[20px] bg-[#f7faf9] p-4 text-sm text-[#69807a]">No pickup history yet.</div>
           )}
         </div>
+      </section>
+
+      {/* Logout Button for Mobile/Desktop Profile Page */}
+      <section className="mt-5 lg:hidden">
+        <button
+          onClick={handleSignOut}
+          className="flex w-full items-center justify-center gap-2 rounded-[24px] bg-[#fff3f3] p-4 font-semibold text-[#b34040] transition-colors hover:bg-[#ffe5e5]"
+        >
+          <LogOut className="h-5 w-5" />
+          Log Out
+        </button>
       </section>
     </div>
   );

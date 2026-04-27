@@ -1,38 +1,65 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Outlet, NavLink, useLocation, useNavigate } from "react-router";
 import { CalendarPlus2, History, Leaf, LogOut, MapPin, Route, User, House } from "lucide-react";
 import { signOutIfNoProfile, useAuthSession, useConnectivityStatus, useUserProfile } from "../lib/appData";
 
 const desktopNavItems = [
-  { name: "Home", path: "/", icon: House },
-  { name: "Schedule", path: "/schedule", icon: CalendarPlus2 },
-  { name: "Track", path: "/track", icon: Route },
-  { name: "Impact", path: "/impact", icon: Leaf },
-  { name: "History", path: "/history", icon: History },
-  { name: "Profile", path: "/profile", icon: User },
+  { name: "Home", path: "/app", icon: House },
+  { name: "Schedule", path: "/app/schedule", icon: CalendarPlus2 },
+  { name: "Track", path: "/app/track", icon: Route },
+  { name: "Impact", path: "/app/impact", icon: Leaf },
+  { name: "History", path: "/app/history", icon: History },
+  { name: "Profile", path: "/app/profile", icon: User },
 ];
 
 export default function Layout() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user } = useAuthSession();
+  const { user, loading: authLoading } = useAuthSession();
   const { profile } = useUserProfile(user?.uid);
   const isOnline = useConnectivityStatus();
 
-  const isActive = (path: string) => (path === "/" ? location.pathname === "/" : location.pathname.startsWith(path));
+  const isActive = (path: string) => (path === "/app" ? location.pathname === "/app" : location.pathname.startsWith(path));
 
   const handleSignOut = async () => {
     await signOutIfNoProfile();
-    navigate("/login");
+    navigate("/");
   };
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate("/", { replace: true });
+    }
+  }, [user, authLoading, navigate]);
+
+  if (authLoading || !user) return null;
 
   return (
     <div className="min-h-screen bg-[#f3f6f4] text-[#102422]">
       <div className="mx-auto min-h-screen max-w-[1600px]">
+        {/* Mobile Header */}
+        <header className="flex items-center justify-between px-4 pt-4 pb-2 lg:hidden">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#00695c] text-white">
+              <MapPin className="h-5 w-5" />
+            </div>
+            <div className="text-[16px] font-bold tracking-tight text-[#102422]">E-waste Collector</div>
+          </div>
+          <div className="flex items-center gap-2">
+            <NavLink to="/app/profile" className="flex h-10 w-10 items-center justify-center rounded-full text-[#102422] transition-colors hover:bg-[#edf7f4] hover:text-[#00695c]">
+              <User className="h-5 w-5" />
+            </NavLink>
+            <button onClick={handleSignOut} className="flex h-10 w-10 items-center justify-center rounded-full text-[#102422] transition-colors hover:bg-[#fff3f3] hover:text-[#b34040]">
+              <LogOut className="h-5 w-5" />
+            </button>
+          </div>
+        </header>
+
+        {/* Desktop Header */}
         <header className="hidden lg:block">
           <div className="px-6 pt-5 xl:px-8">
             <div className="flex items-center justify-between gap-5">
-              <NavLink to="/" className="flex items-center gap-4 rounded-[28px] bg-white px-6 py-4 shadow-[0_18px_40px_rgba(16,36,34,0.08)]">
+              <NavLink to="/app" className="flex items-center gap-4 rounded-[28px] bg-white px-6 py-4 shadow-[0_18px_40px_rgba(16,36,34,0.08)]">
                 <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#00695c] text-white">
                   <MapPin className="h-7 w-7" />
                 </div>
@@ -79,8 +106,8 @@ export default function Layout() {
 
       <nav className="fixed inset-x-0 bottom-0 z-40 px-4 pb-[calc(env(safe-area-inset-bottom)+14px)] lg:hidden">
         <div className="mx-auto max-w-[430px] rounded-[28px] bg-[#161616] px-3 pb-3 pt-4 shadow-[0_24px_48px_rgba(0,0,0,0.28)]">
-          <div className="grid grid-cols-6 items-end">
-            {desktopNavItems.map((item, index) => {
+          <div className="grid grid-cols-5 items-end">
+            {desktopNavItems.filter(item => item.name !== "Profile").map((item, index) => {
               const Icon = item.icon;
               const active = isActive(item.path);
               const center = index === 2;

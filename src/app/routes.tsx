@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter, Navigate } from "react-router";
 import Layout from "./components/Layout";
 import Login from "./pages/Login";
 import Home from "./pages/Requests";
@@ -10,11 +10,11 @@ import Profile from "./pages/Profile";
 
 export const router = createBrowserRouter([
   {
-    path: "/login",
+    path: "/",
     Component: Login,
   },
   {
-    path: "/",
+    path: "/app",
     Component: Layout,
     children: [
       { index: true, Component: Home },
@@ -24,5 +24,9 @@ export const router = createBrowserRouter([
       { path: "history", Component: HistoryPage },
       { path: "profile", Component: Profile },
     ],
+  },
+  {
+    path: "*",
+    element: <Navigate to="/" replace />,
   },
 ]);

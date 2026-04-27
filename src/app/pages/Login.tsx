@@ -8,7 +8,7 @@ const languages = ["EN", "Kannada", "Hindi"];
 export default function Login() {
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
+  const [phone, setPhone] = useState("+919876543210");
   const [language, setLanguage] = useState("EN");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -25,7 +25,7 @@ export default function Login() {
       } else {
         await signInUserProfile({ phone: normalizedPhone });
       }
-      navigate("/");
+      navigate("/app");
     } catch (err: any) {
       setError(err?.message || `Unable to ${mode === "signup" ? "sign up" : "sign in"}.`);
     } finally {
